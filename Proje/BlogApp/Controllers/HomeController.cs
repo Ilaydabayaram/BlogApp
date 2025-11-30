@@ -1,0 +1,22 @@
+using System.Diagnostics;
+using BlogApp.Models;
+using Microsoft.AspNetCore.Mvc;
+
+namespace BlogApp.Controllers
+{
+    public class HomeController : Controller
+    {
+        
+        public IActionResult Index()
+        {
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        
+    }
+}
