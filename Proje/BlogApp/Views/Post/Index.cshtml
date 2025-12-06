@@ -1,0 +1,95 @@
+﻿@using BlogApp.Models.Concrete
+@using System.Security.Claims
+@model IEnumerable<BlogApp.Models.Concrete.Post>
+
+@{
+    ViewData["Title"] = "Blog Yazıları";
+}
+
+<div class="container mt-5">
+
+    @* Başlık ve Yazı Ekle Butonu *@
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Blog Yazıları</h1>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-circle"></i> Yeni Yazı Ekle
+            </a>
+        }
+    </div>
+
+    @* Arama Çubuğu *@
+    <form asp-controller="Post" asp-action="Index" method="get" class="mb-4">
+        <div class="input-group">
+            <input type="text" name="searchString" class="form-control" placeholder="Yazı başlığı veya içerik ara...">
+            <button class="btn btn-secondary" type="submit">Ara</button>
+        </div>
+    </form>
+
+    @* KART LİSTELEME ALANI *@
+    <div class="row">
+        @if (Model.Any())
+        {
+            @foreach (var post in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body d-flex flex-column">
+                            @* Başlık *@
+                            <h5 class="card-title text-primary">@post.Title</h5>
+
+                            @* Tarih *@
+                            <h6 class="card-subtitle mb-3 text-muted" style="font-size: 0.9rem;">
+                                @post.PublishedDate.ToShortDateString()
+                            </h6>
+
+                            @* İçerik Önizleme (HTML etiketlerini temizleyerek) *@
+                            <p class="card-text text-truncate">
+                                @if (!string.IsNullOrEmpty(post.Content))
+                                {
+                                    // HTML etiketlerini kaldırıp saf metni gösterir
+                                    @(System.Text.RegularExpressions.Regex.Replace(post.Content, "<.*?>", String.Empty))
+                                }
+                            </p>
+
+                            @* Butonlar Alanı (En alta yaslanması için mt-auto) *@
+                            <div class="mt-auto pt-3 border-top">
+                                <a asp-controller="Post" asp-action="Details" asp-route-id="@post.Id" class="btn btn-outline-primary btn-sm w-100 mb-2">Devamını Oku</a>
+
+                                @* SADECE YETKİLİ KİŞİYE BUTONLARI GÖSTER *@
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    var myEmail = User.FindFirstValue(ClaimTypes.Email);
+
+                                    // Postun sahibi ben miyim?
+                                    bool isOwner = (post.User != null && post.User.Email == myEmail) ||
+                                    (post.Admin != null && post.Admin.Email == myEmail);
+
+                                    // Veya ben Admin miyim?
+                                    bool isAdmin = User.IsInRole("Admin");
+
+                                    if (isOwner || isAdmin)
+                                    {
+                                        <div class="d-flex gap-2">
+                                            <a asp-action="Edit" asp-route-id="@post.Id" class="btn btn-warning btn-sm flex-fill">Düzenle</a>
+                                            <a asp-action="Delete" asp-route-id="@post.Id" class="btn btn-danger btn-sm flex-fill">Sil</a>
+                                        </div>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="alert alert-info text-center">
+                    Henüz bir blog yazısı eklenmemiş veya arama kriterinize uygun sonuç bulunamadı.
+                </div>
+            </div>
+        }
+    </div>
+</div>

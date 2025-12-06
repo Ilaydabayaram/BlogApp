@@ -1,8 +1,45 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model IEnumerable<BlogApp.Models.Concrete.Post>
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="jumbotron text-center bg-light p-5">
+    <h1 class="display-4">Modern Blog Uygulamasına Hoş Geldiniz!</h1>
+    <p class="lead">Burada en son ve en popüler yazıları keşfedin.</p>
+</div>
+
+<div class="container mt-5">
+    <h2 class="mb-4">Son Yazılar</h2>
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var post in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">@post.Title</h5>
+                            @if (!string.IsNullOrEmpty(post.Content))
+                            {
+                                <p class="card-text">@post.Content.Substring(0, Math.Min(post.Content.Length, 100))...</p>
+                            }
+                            else
+                            {
+                                <p class="card-text">İçerik bulunamadı.</p>
+                            }
+                            <p class="card-subtitle mb-2 text-muted">@post.PublishedDate.ToShortDateString() tarihinde yayımlandı.</p>
+                            <a asp-controller="Post" asp-action="Details" asp-route-id="@post.Id" class="btn btn-primary mt-3">Devamını Oku</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="col-12">
+                <p>Henüz bir blog yazısı bulunmamaktadır. İlk yazınızı eklemek için <a asp-controller="Post" asp-action="Create">buraya</a> tıklayabilirsiniz.</p>
+            </div>
+        }
+    </div>
 </div>

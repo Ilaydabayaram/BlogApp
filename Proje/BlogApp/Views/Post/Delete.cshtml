@@ -1,0 +1,44 @@
+﻿@model BlogApp.Models.Concrete.Post
+
+@{
+    ViewData["Title"] = "Yazıyı Sil";
+}
+
+<div class="container mt-5">
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Dikkat!</h4>
+        <p>Bu işlem geri alınamaz. Bu yazıyı silmek istediğinizden emin misiniz?</p>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-danger text-white">
+            <h5 class="mb-0">Silinecek Yazı</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">Başlık</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Title)</dd>
+
+                <dt class="col-sm-3">Yayın Tarihi</dt>
+                <dd class="col-sm-9">@Model.PublishedDate.ToShortDateString()</dd>
+
+                <dt class="col-sm-3">İçerik Özeti</dt>
+                <dd class="col-sm-9">
+                    @* İçeriğin HTML etiketlerini temizleyip sadece metin kısmının başını gösteriyoruz *@
+                    @if (!string.IsNullOrEmpty(Model.Content))
+                    {
+                        var plainText = System.Text.RegularExpressions.Regex.Replace(Model.Content, "<.*?>", String.Empty);
+                        @(plainText.Length > 100 ? plainText.Substring(0, 100) + "..." : plainText)
+                    }
+                </dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                @* Gizli Id inputu, hangi postun silineceğini taşır *@
+                <input type="hidden" asp-for="Id" />
+
+                <div class="d-flex gap-2 mt-4">
+                    <input type="submit" value="Evet, Sil" class="btn btn-danger" />
+                    <a asp-action="Index" class="btn btn-secondary">İptal Et ve Listeye Dön</a>
+                </div>
+            </form>

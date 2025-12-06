@@ -1,0 +1,45 @@
+﻿@model BlogApp.ModelView.ModelViews
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-4">
+        <div class="card p-4 shadow-1g rounded-3">
+            <h2 class="mb-4 text-center">Giriş Yap</h2>
+            <form asp-action="Login" method="post" novalidate>
+                <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                <div class="mb-3">
+                    <label asp-for="UserRegister.Email" class="form-label">E-posta</label>
+                    <input asp-for="UserRegister.Email" class="form-control" type="email" placeholder="example@gmail.com" />
+                    <span asp-validation-for="UserRegister.Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="UserRegister.Password" class="form-label">Şifre</label>
+                    <input asp-for="UserRegister.Password" class="form-control" type="password" placeholder="********" />
+                    <span asp-validation-for="UserRegister.Password" class="text-danger"></span>
+                </div>
+
+                <div class="d-grid">
+                    <button type="submit" class="btn btn-primary">Giriş Yap</button>
+                </div>
+            </form>
+
+            <div class="text-center mt-3">
+                <a asp-controller="Account" asp-action="Register" class="link-primary">Hesabın yok mu? Kayıt ol</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
